@@ -90,13 +90,13 @@ open class ReloadableViewLayoutAdapter: NSObject, ReloadableViewUpdateManagerDel
     open func reloadSynchronously(
         sectionArrangements: [Section<[LayoutArrangement]>],
         batchUpdates: BatchUpdates? = nil,
-        completion: ((Void) -> Void)?) {
+        completion: (() -> ())?) {
 
         let start = CFAbsoluteTimeGetCurrent()
         currentArrangement = sectionArrangements
 
         if let batchUpdates = batchUpdates {
-            reloadableView?.perform(batchUpdates: batchUpdates)
+            reloadableView?.perform(batchUpdates: batchUpdates, completion: nil)
         } else {
             reloadableView?.reloadDataSynchronously()
         }
