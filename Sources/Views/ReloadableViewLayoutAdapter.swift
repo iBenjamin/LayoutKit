@@ -81,6 +81,33 @@ open class ReloadableViewLayoutAdapter: NSObject, ReloadableViewUpdateManagerDel
         }
     }
 
+    /**
+     Reloads the view with section arrangements.
+   
+     - parameter batchUpdates: The updates to apply to the reloadable view after the layout is computed. If nil, then all data will be reloaded. Default is nil.
+     - parameter completion: A closure that is called on the main thread when the operation is complete.
+     */
+    open func reloadSynchronously(
+      sectionArrangements: [Section<[LayoutArrangement]>],
+      batchUpdates: BatchUpdates? = nil,
+      completion: ((Void) -> Void)?) {
+      
+      let start = CFAbsoluteTimeGetCurrent()
+      currentArrangement = sectionArrangements
+      
+      if let batchUpdates = batchUpdates {
+        reloadableView?.perform(batchUpdates: batchUpdates, completion: completion)
+      } else {
+        reloadableView?.reloadDataSynchronously()
+      }
+      
+      let end = CFAbsoluteTimeGetCurrent()
+      logger?("user: \((end-start).ms)")
+      if batchUpdates == nil {
+        completion?()
+      }
+    }
+  
     private func reloadSynchronously<T: Collection, U: Collection>(
         layoutProvider: (Void) -> T,
         layoutFunc: @escaping (Layout) -> LayoutArrangement,
