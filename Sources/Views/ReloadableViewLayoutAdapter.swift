@@ -90,20 +90,20 @@ open class ReloadableViewLayoutAdapter: NSObject, ReloadableViewUpdateManagerDel
     open func reloadSynchronously(
         sectionArrangements: [Section<[LayoutArrangement]>],
         batchUpdates: BatchUpdates? = nil,
-        completion: (() -> ())?) {
+        completion: (() -> Void)?) {
 
         let start = CFAbsoluteTimeGetCurrent()
         currentArrangement = sectionArrangements
 
         if let batchUpdates = batchUpdates {
-            reloadableView?.perform(batchUpdates: batchUpdates, completion: nil)
+            reloadableView?.perform(batchUpdates: batchUpdates, completion: completion)
         } else {
             reloadableView?.reloadDataSynchronously()
+            completion?()
         }
 
         let end = CFAbsoluteTimeGetCurrent()
         logger?("user: \((end-start).ms)")
-        completion?()
     }
 
     private func reloadSynchronously<T: Collection, U>(
